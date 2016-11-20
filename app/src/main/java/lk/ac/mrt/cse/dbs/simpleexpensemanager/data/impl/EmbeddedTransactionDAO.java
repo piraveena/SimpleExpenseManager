@@ -25,7 +25,7 @@ public class EmbeddedTransactionDAO implements TransactionDAO {
     //transaction table
 
 
-    private DBHandler dbhandler;
+
     SQLiteDatabase db;
 
     public EmbeddedTransactionDAO(SQLiteDatabase db){
@@ -37,12 +37,10 @@ public class EmbeddedTransactionDAO implements TransactionDAO {
     @Override
     //insert values into transaction table
     public void logTransaction(Date date_, String accountNo, ExpenseType expenseType_, double amount_){
-        db = dbhandler.getWritableDatabase();
 
-        db.beginTransaction();
 
-        try {
-            String insert_query = "INSERT INTO Account_Transaction (accounttNo,expenseType,amount,date) VALUES (?,?,?,?)";
+
+            String insert_query = "INSERT INTO Account_Transaction (accountNo,expenseType,amount,date) VALUES (?,?,?,?)";
             SQLiteStatement statement = db.compileStatement(insert_query);
 
             statement.bindString(1,accountNo);
@@ -52,13 +50,7 @@ public class EmbeddedTransactionDAO implements TransactionDAO {
 
             statement.executeInsert();
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            // Log.d(TAG, "Error while trying to add post to database");
-        } finally {
 
-            db.endTransaction();
-        }
 
     }
 
@@ -68,16 +60,14 @@ public class EmbeddedTransactionDAO implements TransactionDAO {
         List<Transaction> transactions = new ArrayList<>();
 
         String TRANSACTION_DETAIL_SELECT_QUERY = "SELECT * FROM Account_Transaction";
-
-        db = dbhandler.getReadableDatabase();
         Cursor cursor = db.rawQuery(TRANSACTION_DETAIL_SELECT_QUERY, null);
 
         try {
             if (cursor.moveToFirst()) {
                 do {
                     Transaction trans=new Transaction(
-                            new SimpleDateFormat("MM/dd/yyyy").parse(cursor.getString(cursor.getColumnIndex("date"))),
-                            cursor.getString(cursor.getColumnIndex("accounttNo")),
+                            new Date(cursor.getLong(cursor.getColumnIndex("date"))),
+                            cursor.getString(cursor.getColumnIndex("accountNo")),
                             (cursor.getInt(cursor.getColumnIndex("expenseType")) == 0) ? ExpenseType.EXPENSE : ExpenseType.INCOME,
                    cursor.getDouble(cursor.getColumnIndex("amount")));
 
@@ -112,27 +102,21 @@ public class EmbeddedTransactionDAO implements TransactionDAO {
 
         Cursor cursor = db.rawQuery(TRANS_DETAIL_SELECT_QUERY, null);
 
-        try {
+
             if (cursor.moveToFirst()) {
                 do {
                     Transaction trans=new Transaction(
-                            new SimpleDateFormat("MM/dd/yyyy").parse(cursor.getString(cursor.getColumnIndex(dbhandler.date))),
-                            cursor.getString(cursor.getColumnIndex(dbhandler.accounttNo)),
+                            new Date(cursor.getLong(cursor.getColumnIndex("date"))),
+                            cursor.getString(cursor.getColumnIndex("accountNo")),
                             (cursor.getInt(cursor.getColumnIndex("expenseType")) == 0) ? ExpenseType.EXPENSE : ExpenseType.INCOME,
-                            cursor.getDouble(cursor.getColumnIndex(dbhandler.amount)));
+                            cursor.getDouble(cursor.getColumnIndex("amount")));
 
 
                     transdetail.add(trans);
 
                 } while (cursor.moveToNext());
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (cursor != null && !cursor.isClosed()) {
-                cursor.close();
-            }
-        }
+
         return  transdetail;
     }
 

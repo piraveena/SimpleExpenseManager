@@ -22,7 +22,7 @@ import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.ExpenseType;
 
 public class EmbeddedAccountDAO  implements AccountDAO {
 
-    private DBHandler dbhandler;
+
     SQLiteDatabase db;
    /* public EmbeddedAccountDAO(Context context){
 
@@ -45,7 +45,7 @@ public class EmbeddedAccountDAO  implements AccountDAO {
                 do {
 
                     String test=cursor.getString(cursor
-                            .getColumnIndex(ACCOUNT_NUMBERS_SELECT_QUERY));
+                            .getColumnIndex("accountNo"));
 
                     accountNumbers.add(test);
 
@@ -104,8 +104,8 @@ public class EmbeddedAccountDAO  implements AccountDAO {
     //get account details for a particular account number
     @Override
     public Account getAccount(String accountNo) throws InvalidAccountException {
-        String ACCOUNT_SELECT_QUERY = "SELECT * FROM Account where accountNo="+accountNo;
-        db = dbhandler.getReadableDatabase();
+        String ACCOUNT_SELECT_QUERY = "SELECT * FROM Account where accountNo = "+accountNo;
+
         Cursor cursor = db.rawQuery(ACCOUNT_SELECT_QUERY, null);
         if (cursor != null)
             cursor.moveToFirst();
@@ -142,7 +142,7 @@ public class EmbeddedAccountDAO  implements AccountDAO {
     @Override
     public void removeAccount(String accountNo) throws InvalidAccountException {
 
-        String sqlquery = "DELETE FROM Account WHERE Account_no = ?";
+        String sqlquery = "DELETE FROM Account WHERE accountNo = ?";
         SQLiteStatement statement = db.compileStatement(sqlquery);
 
         statement.bindString(1,accountNo);
