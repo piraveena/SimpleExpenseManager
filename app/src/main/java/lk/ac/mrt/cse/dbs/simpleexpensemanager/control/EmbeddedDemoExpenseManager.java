@@ -36,7 +36,7 @@ public class EmbeddedDemoExpenseManager extends ExpenseManager{
 
     public void setup() throws ExpenseManagerException {
 
-        SQLiteDatabase db = context.openOrCreateDatabase("140429", context.MODE_PRIVATE, null);
+        SQLiteDatabase db = context.openOrCreateDatabase("140431J", context.MODE_PRIVATE, null);
 
         // create the databases.
         db.execSQL("CREATE TABLE IF NOT EXISTS Account(" +
